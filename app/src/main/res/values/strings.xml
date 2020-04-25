@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Weather</string>
+    <string name="title_today">Today</string>
+    <string name="title_future">Future</string>
+    <string name="title_date">Date</string>
+    <string name="predictability">%s%s</string>
+
+</resources>
