@@ -107,6 +107,7 @@ class TodayFragment : Fragment() {
                             text_day.text = resource.data.title
                             val woeid = resource.data.woeid
                             setupCurrentWeatherObserver(woeid)
+ //                           setupFutureWeatherObserver(woeid)
                         }
                         else
                             text_day.text = getString(R.string.cantGetWeather)
@@ -150,6 +151,53 @@ class TodayFragment : Fragment() {
 
                             }
                              //text_time_at_location.text =
+                            //text_location.text = resource.data?.title
+                            //woeId = resource.data?.woeid
+                        }
+                        else
+                            text_day.text = getString(R.string.cantGetWeather)
+
+                    }
+
+                    Status.ERROR -> {
+                        progressBar.visibility = View.GONE
+                        Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
+                    }
+                    Status.LOADING -> {
+                        // Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
+                        progressBar.visibility = View.VISIBLE
+                    }
+
+                }
+            }
+        })
+
+    }
+
+    private fun setupFutureWeatherObserver(woeid: Int) {
+        viewModel.getCurrentWeather(woeid).observe(viewLifecycleOwner, Observer {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+//                        recyclerView.visibility = View.VISIBLE
+                        progressBar.visibility = View.GONE
+                        if(resource.data != null) {
+                            text_current_temp.text = resource.data.the_tempF.toString()
+                            text_minimum_temp.text = resource.data.min_tempF.toString()
+                            text_maxumum_temp.text = resource.data.max_tempF.toString()
+                            text_weather_state.text = resource.data.weather_state_name
+
+                            val imageDrawable =  getWeatherStateImage(resource.data.weather_state_abbr)
+                            val appContext = activity?.applicationContext
+                            if(appContext != null && imageDrawable >= 0) {
+                                image_weather_state.setImageDrawable(
+                                    ContextCompat.getDrawable(
+                                        appContext, // Context
+                                        imageDrawable// Drawable
+                                    ))
+
+                            }
+                            //text_time_at_location.text =
                             //text_location.text = resource.data?.title
                             //woeId = resource.data?.woeid
                         }
