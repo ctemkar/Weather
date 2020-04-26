@@ -5,26 +5,23 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
-    private val MY_PERMISSIONS_ACCESS_FINE_LOCATION = 1;
+    private val MY_PERMISSIONS_ACCESS_FINE_LOCATION = 1
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    public lateinit var location : Location
+    private lateinit var location : Location
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+    //    val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
         val navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
@@ -35,7 +32,7 @@ class MainActivity : AppCompatActivity() {
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        // navView.setupWithNavController(navController)
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -68,10 +65,8 @@ class MainActivity : AppCompatActivity() {
             .addOnSuccessListener { loc : Location? ->
                 if (loc != null) {
                     this.location = loc
-                    Toast.makeText(this, "Got location" +
-                            loc.latitude + ", " + loc.longitude, Toast.LENGTH_LONG)
-                } else
-                    Toast.makeText(this, "Got NULL location", Toast.LENGTH_LONG)
+                    //Toast.makeText(this, "Got location" + loc.latitude + ", " + loc.longitude, Toast.LENGTH_LONG).show()
+                } //else Toast.makeText(this, "Got NULL location", Toast.LENGTH_LONG).show()
 
                 // Got last known location. In some rare situations this can be null.
 
@@ -86,10 +81,10 @@ class MainActivity : AppCompatActivity() {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                } else {
+                } /*else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                }
+                }*/
                 return
             }
 

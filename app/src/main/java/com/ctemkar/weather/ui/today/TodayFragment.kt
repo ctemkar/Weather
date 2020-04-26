@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -26,10 +25,10 @@ class TodayFragment : Fragment() {
 
     private val TAG : String = "TodayFragment"
     private lateinit var viewModel: LocationInfoViewModel
-    private var woeId = -1;
+    private var woeId = -1
     // private lateinit var homeViewModel: TodayViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    public var location : Location = Location("");
+    var location : Location = Location("")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,12 +36,7 @@ class TodayFragment : Fragment() {
     ): View? {
        // homeViewModel = ViewModelProviders.of(this).get(TodayViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_today, container, false)
-        val textView: TextView = root.findViewById(R.id.text_location)
-        /*
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-*/
+
         val ctx = getActivity()?.applicationContext
         if (ctx != null) {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
@@ -101,7 +95,7 @@ class TodayFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        var sLatLong = if(location.latitude == 0.0)
+        val sLatLong = if(location.latitude == 0.0)
             "40.793896,-73.940711" else location.latitude.toString() + "," + location.longitude.toString()
         viewModel.getLocationInfo(sLatLong).observe(viewLifecycleOwner, Observer {
             it?.let { resource ->
@@ -110,13 +104,12 @@ class TodayFragment : Fragment() {
 //                        recyclerView.visibility = View.VISIBLE
                         progressBar.visibility = View.GONE
                         if(resource.data != null) {
-                            text_location.text = resource.data?.title
-                            val woeid = resource.data?.woeid
+                            text_day.text = resource.data.title
+                            val woeid = resource.data.woeid
                             setupCurrentWeatherObserver(woeid)
                         }
                         else
-                            text_location.text = "Sorry, can't get weather"
-
+                            text_day.text = getString(R.string.cantGetWeather)
                     }
 
                     Status.ERROR -> {
@@ -161,7 +154,7 @@ class TodayFragment : Fragment() {
                             //woeId = resource.data?.woeid
                         }
                         else
-                            text_location.text = "Sorry, can't get weather"
+                            text_day.text = getString(R.string.cantGetWeather)
 
                     }
 
@@ -181,7 +174,7 @@ class TodayFragment : Fragment() {
     }
 
     private fun getWeatherStateImage(weatherStateAbbr: String) : Int {
-        var resource = when(weatherStateAbbr) {
+        return when(weatherStateAbbr) {
             "sn" -> R.drawable.mw_sn
             "sl" -> R.drawable.mw_sl
             "h" -> R.drawable.mw_h
@@ -194,20 +187,7 @@ class TodayFragment : Fragment() {
             "c" -> R.drawable.mw_c
             else -> -1
         }
-        return resource
-
-    }
-/*
-    private fun retrieveList(weatherByDates: List<WeatherInfo>) {
-        /*
-        adapter.apply {
-            addWeatherByDates(weatherByDates)
-            notifyDataSetChanged()
-        }
-
-         */
     }
 
- */
 
 }

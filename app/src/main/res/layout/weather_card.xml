@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".ui.today.TodayFragment">
 
     <TextView
@@ -55,21 +55,10 @@
         android:layout_marginEnd="8dp"
         android:text="@string/emptyTemp"
         android:textAlignment="center"
-        android:textAppearance="@style/CurrentTemperatureStyle"
+        android:textAppearance="@style/VariableText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_day" />
-
-    <TextView
-        android:id="@+id/text_min_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:text="@string/min"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/text_minimum_temp"
-        app:layout_constraintTop_toBottomOf="@+id/text_current_temp" />
 
     <TextView
         android:id="@+id/text_minimum_temp"
@@ -155,8 +144,8 @@
 
     <ImageView
         android:id="@+id/image_weather_state"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:contentDescription="@string/weather_state_image"

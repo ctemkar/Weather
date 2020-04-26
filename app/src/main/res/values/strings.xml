@@ -8,5 +8,7 @@
     <string name="min">Min:</string>
     <string name="max">Max:</string>
     <string name="deg_f">" \u2109"</string>
+    <string name="cantGetWeather">"Sorry, can't get weather"</string>
+    <string name="weather_state_image">Weather State Image</string>
 
 </resources>
