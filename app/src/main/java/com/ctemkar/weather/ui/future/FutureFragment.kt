@@ -48,10 +48,18 @@ class FutureFragment : Fragment() {
         setupObservers()
     }
     private fun setupViewModel() {
+       /* var viewModel: MainViewModel = ViewModelProvider(viewModelStore,
+            ViewModelFactory(ApiHelper(RetrofitBuilder.apiService))).get(
+            MainViewModel::class.java)
+
+        */
+
         viewModel = ViewModelProviders.of(
             this,
             ViewModelFactory(ApiHelper(RetrofitBuilder.apiService))
         ).get(MainViewModel::class.java)
+
+
     }
 
     private fun setupUI() {
