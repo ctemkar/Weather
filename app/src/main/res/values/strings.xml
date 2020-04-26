@@ -4,5 +4,9 @@
     <string name="title_future">Future</string>
     <string name="title_date">Date</string>
     <string name="predictability">%s%s</string>
+    <string name="emptyTemp">--</string>
+    <string name="min">Min:</string>
+    <string name="max">Max:</string>
+    <string name="deg_f">" \u2109"</string>
 
 </resources>

@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/text_location"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -16,22 +16,22 @@
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
+    <!--
     <TextView
         android:id="@+id/text_time_at_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="8sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_location" />
-
+        app:layout_constraintTop_toBottomOf="@+id/text_location"
+        tools:visibility="gone" />
     <TextView
         android:id="@+id/text_last_forecast"
         android:layout_width="match_parent"
@@ -40,10 +40,95 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="8sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_time_at_location" />
+        app:layout_constraintTop_toBottomOf="@+id/text_time_at_location"
+        tools:visibility="gone" />
+-->
+
+    <TextView
+        android:id="@+id/text_current_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/emptyTemp"
+        android:textAlignment="center"
+        android:textAppearance="@style/CurrentTemperatureStyle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_location" />
+
+    <TextView
+        android:id="@+id/text_min_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/min"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/text_minimum_temp"
+        app:layout_constraintTop_toBottomOf="@+id/text_current_temp" />
+
+    <TextView
+        android:id="@+id/text_minimum_temp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/emptyTemp"
+        android:textAlignment="center"
+        android:textAppearance="@style/VariableText"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/text_min_degF"
+        app:layout_constraintTop_toBottomOf="@+id/text_current_temp" />
+
+
+    <TextView
+        android:id="@+id/text_min_degF"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:text="@string/deg_f"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/progressBar"
+        app:layout_constraintTop_toBottomOf="@+id/text_current_temp" />
+
+    <TextView
+        android:id="@+id/text_max_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:text="@string/max"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/progressBar"
+        app:layout_constraintTop_toBottomOf="@+id/text_current_temp" />
+
+    <TextView
+        android:id="@+id/text_maxumum_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/emptyTemp"
+        android:textAlignment="center"
+        android:textAppearance="@style/VariableText"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/text_max_title"
+        app:layout_constraintTop_toBottomOf="@+id/text_current_temp" />
+
+    <TextView
+        android:id="@+id/text_max_degF"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/deg_f"
+        android:textAlignment="center"
+
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/text_maxumum_temp"
+        app:layout_constraintTop_toBottomOf="@+id/text_current_temp" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -53,4 +138,42 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <ImageView
+        android:id="@+id/image_weather_state"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:contentDescription="Weather State Image"
+        android:src="@drawable/ic_wb_sunny_yellow_24dp"
+        app:layout_constraintStart_toEndOf="@+id/text_current_temp"
+        app:layout_constraintTop_toBottomOf="@+id/text_location" />
+
+    <TextView
+        android:id="@+id/text_weather_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/emptyTemp"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintStart_toEndOf="@+id/text_current_temp"
+        app:layout_constraintTop_toBottomOf="@+id/image_weather_state" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

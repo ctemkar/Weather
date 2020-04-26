@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.ctemkar.weather.R
 import kotlinx.android.synthetic.main.fragment_future.*
 import main.MainViewModel
-import model.WeatherByDates
+import model.WeatherInfo
 import network.ApiHelper
 import network.RetrofitBuilder
 import ui.base.ViewModelFactory
@@ -100,7 +100,7 @@ class FutureFragment : Fragment() {
         })
     }
 
-    private fun retrieveList(weatherByDates: List<WeatherByDates>) {
+    private fun retrieveList(weatherByDates: List<WeatherInfo>) {
         adapter.apply {
             addWeatherByDates(weatherByDates)
             notifyDataSetChanged()

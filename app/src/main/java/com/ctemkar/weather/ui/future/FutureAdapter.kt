@@ -6,14 +6,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ctemkar.weather.R
 import kotlinx.android.synthetic.main.weather_item_layout.view.*
-import model.WeatherByDates
+import model.WeatherInfo
 import kotlin.math.roundToInt
 
-class FutureAdapter(private val users: ArrayList<WeatherByDates>) : RecyclerView.Adapter<FutureAdapter.DataViewHolder>() {
+class FutureAdapter(private val users: ArrayList<WeatherInfo>) : RecyclerView.Adapter<FutureAdapter.DataViewHolder>() {
 
     class DataViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(user: WeatherByDates) {
+        fun bind(user: WeatherInfo) {
             itemView.apply {
                 tvDay.text = user.applicable_date.toString()
                 tvWeatherStateName.text = user.weather_state_name.toString()
@@ -40,13 +40,13 @@ class FutureAdapter(private val users: ArrayList<WeatherByDates>) : RecyclerView
         holder.bind(users[position])
     }
 
-    fun addWeatherByDates(weatherByDate: List<WeatherByDates>) {
+    fun addWeatherByDates(weatherByDate: List<WeatherInfo>) {
         this.users.apply {
             clear()
             // We just need one value per date, can be averaged or can just take the top value
             // for brevity, choosing top value
             var currentDate = ""
-            var summarizedWeather : ArrayList<WeatherByDates> = ArrayList<WeatherByDates>()
+            var summarizedWeather : ArrayList<WeatherInfo> = ArrayList<WeatherInfo>()
 
             for (weather in weatherByDate) {
                 if(currentDate != weather.applicable_date) {

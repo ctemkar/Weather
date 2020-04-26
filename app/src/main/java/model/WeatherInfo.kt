@@ -1,6 +1,6 @@
 package model
 
-data class WeatherByDates(
+data class WeatherInfo(
     val air_pressure: Double,
     val applicable_date: String,
     val created: String,
@@ -12,6 +12,7 @@ data class WeatherByDates(
     var min_tempF: Int,
     val predictability: Int,
     val the_temp: Double,
+    var the_tempF: Int,
     val visibility: Double,
     val weather_state_abbr: String,
     val weather_state_name: String,
