@@ -3,6 +3,7 @@ package model
 data class WeatherInfo(
     val air_pressure: Double,
     val applicable_date: String,
+    var day : String,
     val created: String,
     val humidity: Int,
     val id: Long,
