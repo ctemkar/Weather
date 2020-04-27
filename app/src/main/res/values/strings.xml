@@ -10,5 +10,6 @@
     <string name="deg_f">" \u2109"</string>
     <string name="cantGetWeather">"Sorry, can't get weather"</string>
     <string name="weather_state_image">Weather State Image</string>
+    <string name="weather_on_date">Weather on Date</string>
 
 </resources>

@@ -5,9 +5,7 @@ import android.content.Context
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -25,17 +23,59 @@ import network.ApiHelper
 import network.RetrofitBuilder
 import ui.base.LocationInfoViewModelFactory
 import utils.Constant
+import utils.DatePickerFragment
+import utils.SharedViewModel
 import utils.Status
 
 
 class TodayFragment : Fragment() {
 
+    private var dateToShow: DateTime = DateTime.now() + 1.days
     private val TAG: String = "TodayFragment"
     private lateinit var viewModel: LocationInfoViewModel
     private var woeId = -1
 
     // private lateinit var homeViewModel: TodayViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.weather_main_frag_menu, menu)
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        /*
+
+        ViewModelProviders.of(activity!!)[SharedViewModel::class.java]
+            .selectedDate
+            .observe(activity!!, Observer { dateOfBirthField.editText.setText(it) })
+
+         */
+        return when (item.itemId) {
+            R.id.weather_on_date -> {
+
+                ViewModelProviders.of(requireActivity())[SharedViewModel::class.java]
+                    .selectedDate
+                    .observe(requireActivity(), Observer {
+                        dateToShow = it
+                        setupDateRangeObserver(
+                        woeId,
+                        it,
+                        Constant.defaultWeatherDays
+                    ) })
+
+                val newFragment = DatePickerFragment()
+                activity?.supportFragmentManager?.let { newFragment.show(it, "datePicker") }
+                // activity?.supportFragmentManager?.let { TimePickerFragment().show(it, "timePicker") }
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+
     var location: Location = Location("")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +86,7 @@ class TodayFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_today, container, false)
 
         val ctx = getActivity()?.applicationContext
+        setHasOptionsMenu(true)
         if (ctx != null) {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
             fusedLocationClient.lastLocation
@@ -114,9 +155,13 @@ class TodayFragment : Fragment() {
                         progressBar.visibility = View.GONE
                         if (resource.data != null) {
                             text_day.text = resource.data.title
-                            val woeid = resource.data.woeid
-                            setupCurrentWeatherObserver(woeid)
-                            setupDateRangeObserver(woeid, DateTime.now() + 1.days, Constant.defaultWeatherDays)
+                            woeId = resource.data.woeid
+                            setupCurrentWeatherObserver(woeId)
+                            setupDateRangeObserver(
+                                woeId,
+                                DateTime.now() + 1.days,
+                                Constant.defaultWeatherDays
+                            )
                         } else
                             text_day.text = getString(R.string.cantGetWeather)
                     }
