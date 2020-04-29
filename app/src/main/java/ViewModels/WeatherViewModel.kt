@@ -7,7 +7,7 @@ import data.repository.DataRepository
 import kotlinx.coroutines.Dispatchers
 import utils.Resource
 
-class LocationInfoViewModel(private val dataRepository: DataRepository) : ViewModel() {
+class WeatherViewModel(private val dataRepository: DataRepository) : ViewModel() {
 
     fun getLocationInfo(latlong: String) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))

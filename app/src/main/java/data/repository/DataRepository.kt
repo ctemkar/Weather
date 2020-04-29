@@ -66,9 +66,11 @@ class DataRepository(private val apiHelper: ApiHelper) {
 //        val stackWeatherInfoList = Stack<WeatherInfo>()
         Log.d(TAG, "Date: " + dateStart + 1.days)
         var date = dateStart
+        val today = DateTime.now()
         val tomorrow = DateTime.now() + 1.days
         val dateFormat = DateFormat("yyyy-MM-dd") // Construct a new DateFormat from a String
         val dateDisplayFormatCurrentYear = DateFormat("EEE MMM, dd")
+        val dateDispalyFromatOtherYears = DateFormat("MM dd, YYYY")
 
         for(i in 0 until noOfDays) {
            // Log.d(TAG, date.yearInt.toString() + "/" + date.month1.toString() + "/" + date.dayOfMonth.toString())
@@ -82,7 +84,10 @@ class DataRepository(private val apiHelper: ApiHelper) {
                     && applicableDate.dayOfMonth == tomorrow.dayOfMonth)
                     selectWeatherInfo.day = "Tomorrow"
                 else
-                    selectWeatherInfo.day = applicableDate.format(dateDisplayFormatCurrentYear)
+                    if(applicableDate.year == today.year)
+                        selectWeatherInfo.day = applicableDate.format(dateDisplayFormatCurrentYear)
+                    else
+                        selectWeatherInfo.day = applicableDate.format((dateDispalyFromatOtherYears))
                 weatherInfoList.add(selectWeatherInfo)
 
             } else

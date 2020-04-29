@@ -81,18 +81,18 @@ class FutureFragment : Fragment() {
                 when (resource.status) {
                     Status.SUCCESS -> {
                         recyclerView.visibility = View.VISIBLE
-                        progressBar.visibility = View.GONE
+                        progressBarTodaysWeather.visibility = View.GONE
                         resource.data?.let { users -> retrieveList(users) }
                     }
                     Status.ERROR -> {
 
                         recyclerView.visibility = View.VISIBLE
-                        progressBar.visibility = View.GONE
+                        progressBarTodaysWeather.visibility = View.GONE
                         Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
                     }
                     Status.LOADING -> {
                         // Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
-                        progressBar.visibility = View.VISIBLE
+                        progressBarTodaysWeather.visibility = View.VISIBLE
                         recyclerView.visibility = View.GONE
                     }
                 }

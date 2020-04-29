@@ -95,7 +95,7 @@
         android:text="@string/deg_f"
         android:textAlignment="center"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/progressBar"
+        app:layout_constraintEnd_toStartOf="@+id/progressBarTodaysWeather"
         app:layout_constraintTop_toBottomOf="@+id/text_current_temp" />
 
     <TextView
@@ -106,7 +106,7 @@
         android:text="@string/max"
         android:textAlignment="center"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/progressBar"
+        app:layout_constraintStart_toEndOf="@+id/progressBarTodaysWeather"
         app:layout_constraintTop_toBottomOf="@+id/text_current_temp" />
 
     <TextView
@@ -134,7 +134,7 @@
         app:layout_constraintTop_toBottomOf="@+id/text_current_temp" />
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progressBarTodaysWeather"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -185,21 +185,34 @@
         android:id="@+id/horizontal_separator_line"
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
         android:background="@android:color/darker_gray"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/LinearLayout_weatherCardViews"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_max_degF" />
 
     <LinearLayout
         android:id="@+id/LinearLayout_weatherCardViews"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="32dp"
         android:orientation="vertical"
+        android:paddingTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_max_degF">
+        app:layout_constraintTop_toBottomOf="@id/horizontal_separator_line">
 
+        <ProgressBar
+            android:id="@+id/progressBarDaysWeather"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

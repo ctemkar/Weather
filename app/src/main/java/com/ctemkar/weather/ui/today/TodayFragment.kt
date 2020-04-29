@@ -1,6 +1,6 @@
 package com.ctemkar.weather.ui.today
 
-import ViewModels.LocationInfoViewModel
+import ViewModels.WeatherViewModel
 import android.content.Context
 import android.location.Location
 import android.os.Bundle
@@ -9,11 +9,10 @@ import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.ctemkar.weather.R
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.days
 import kotlinx.android.synthetic.main.fragment_today.*
@@ -32,11 +31,12 @@ class TodayFragment : Fragment() {
 
     private var dateToShow: DateTime = DateTime.now() + 1.days
     private val TAG: String = "TodayFragment"
-    private lateinit var viewModel: LocationInfoViewModel
+    private lateinit var viewModel: WeatherViewModel
     private var woeId = -1
+    private val model: SharedViewModel by activityViewModels()
 
     // private lateinit var homeViewModel: TodayViewModel
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+   // private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.weather_main_frag_menu, menu)
@@ -60,10 +60,11 @@ class TodayFragment : Fragment() {
                     .observe(requireActivity(), Observer {
                         dateToShow = it
                         setupDateRangeObserver(
-                        woeId,
-                        it,
-                        Constant.defaultWeatherDays
-                    ) })
+                            woeId,
+                            it,
+                            Constant.defaultWeatherDays
+                        )
+                    })
 
                 val newFragment = DatePickerFragment()
                 activity?.supportFragmentManager?.let { newFragment.show(it, "datePicker") }
@@ -84,16 +85,24 @@ class TodayFragment : Fragment() {
     ): View? {
         // homeViewModel = ViewModelProviders.of(this).get(TodayViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_today, container, false)
+        model.currentLocation.observe(viewLifecycleOwner, Observer<Location> { item ->
+            location = model.currentLocation.value!!
+            if (location != null)
+                Log.d(TAG, "lat: " + location.latitude + ", lon: " + location.longitude)
+                setupObservers()
 
-        val ctx = getActivity()?.applicationContext
+            // Update the UI
+        })
+        // val ctx = getActivity()?.applicationContext
         setHasOptionsMenu(true)
+        /*
         if (ctx != null) {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { loc: Location? ->
                     if (loc != null) {
                         this.location = loc
-                        setupObservers()
+//                        setupObservers()
 
                     } else
                     // Got last known location. In some rare situations this can be null.
@@ -103,6 +112,7 @@ class TodayFragment : Fragment() {
 
         }
 
+         */
         return root
     }
 
@@ -123,7 +133,7 @@ class TodayFragment : Fragment() {
         viewModel = ViewModelProviders.of(
             this,
             LocationInfoViewModelFactory(ApiHelper(RetrofitBuilder.apiService))
-        ).get(LocationInfoViewModel::class.java)
+        ).get(WeatherViewModel::class.java)
 
 
     }
@@ -152,7 +162,7 @@ class TodayFragment : Fragment() {
                 when (resource.status) {
                     Status.SUCCESS -> {
 //                        recyclerView.visibility = View.VISIBLE
-                        progressBar.visibility = View.GONE
+                        progressBarTodaysWeather.visibility = View.GONE
                         if (resource.data != null) {
                             text_day.text = resource.data.title
                             woeId = resource.data.woeid
@@ -167,12 +177,12 @@ class TodayFragment : Fragment() {
                     }
 
                     Status.ERROR -> {
-                        progressBar.visibility = View.GONE
+                        progressBarTodaysWeather.visibility = View.GONE
                         Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
                     }
                     Status.LOADING -> {
                         // Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
-                        progressBar.visibility = View.VISIBLE
+                        progressBarTodaysWeather.visibility = View.VISIBLE
                     }
 
                 }
@@ -186,7 +196,7 @@ class TodayFragment : Fragment() {
                 when (resource.status) {
                     Status.SUCCESS -> {
 //                        recyclerView.visibility = View.VISIBLE
-                        progressBar.visibility = View.GONE
+                        progressBarTodaysWeather.visibility = View.GONE
                         val weatherInfo = resource.data
                         if (weatherInfo != null) {
                             text_current_temp.text = weatherInfo.the_tempF.toString()
@@ -215,12 +225,12 @@ class TodayFragment : Fragment() {
                     }
 
                     Status.ERROR -> {
-                        progressBar.visibility = View.GONE
+                        progressBarTodaysWeather.visibility = View.GONE
                         Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
                     }
                     Status.LOADING -> {
                         // Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
-                        progressBar.visibility = View.VISIBLE
+                        progressBarTodaysWeather.visibility = View.VISIBLE
                     }
 
                 }
@@ -240,7 +250,7 @@ class TodayFragment : Fragment() {
                     when (resource.status) {
                         Status.SUCCESS -> {
 //                        recyclerView.visibility = View.VISIBLE
-                            progressBar.visibility = View.GONE
+                            progressBarTodaysWeather.visibility = View.GONE
                             if (resource.data != null) {
                                 Log.d(TAG, resource.data[0].weather_state_name)
                                 val weatherList = resource.data
@@ -275,12 +285,12 @@ class TodayFragment : Fragment() {
                         }
 
                         Status.ERROR -> {
-                            progressBar.visibility = View.GONE
+                            progressBarTodaysWeather.visibility = View.GONE
                             Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
                         }
                         Status.LOADING -> {
                             // Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
-                            progressBar.visibility = View.VISIBLE
+                            progressBarTodaysWeather.visibility = View.VISIBLE
                         }
 
                     }
