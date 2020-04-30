@@ -1,8 +1,6 @@
 package com.ctemkar.weather
 
 import android.Manifest
-import android.app.Activity
-import android.app.AlertDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.location.Location
@@ -17,8 +15,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.*
+import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import utils.ForegroundOnlyLocationService
@@ -90,7 +89,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 //        setupActionBarWithNavController(navController, appBarConfiguration)
         // navView.setupWithNavController(navController)
         //checkGpsStatus()
-        isGPSEnabled(this)
+        //isGPSEnabled(this)
     }
 
     override fun onStart() {
@@ -111,7 +110,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         super.onResume()
         val serviceIntent = Intent(this, ForegroundOnlyLocationService::class.java)
         bindService(serviceIntent, foregroundOnlyServiceConnection, Context.BIND_AUTO_CREATE)
-        getLastLocation()
         LocalBroadcastManager.getInstance(this).registerReceiver(
             foregroundOnlyBroadcastReceiver,
             IntentFilter(
@@ -120,6 +118,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         )
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
+        createLocationRequest()
     }
 
     override fun onPause() {
@@ -294,7 +293,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
         }
     }
-
+/*
     fun isGPSEnabled(context: Context): Boolean {
         val service =
             context.getSystemService(Activity.LOCATION_SERVICE) as LocationManager
@@ -330,6 +329,8 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
     }
 
+ */
+
     private fun getLastLocation() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         fusedLocationClient.lastLocation
@@ -347,4 +348,42 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 
     }
 
+    fun createLocationRequest() {
+        val REQUEST_CHECK_SETTINGS = 1
+        val locationRequest = LocationRequest.create()?.apply {
+            interval = 10000
+            fastestInterval = 5000
+            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        }
+        if(locationRequest != null) {
+            val builder = LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest)
+            val client: SettingsClient = LocationServices.getSettingsClient(this)
+            val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
+            task.addOnSuccessListener { locationSettingsResponse ->
+                // All location settings are satisfied. The client can initialize
+                // location requests here.
+                // ...
+                getLastLocation()
+
+            }
+
+            task.addOnFailureListener { exception ->
+                if (exception is ResolvableApiException){
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+
+                        exception.startResolutionForResult(this@MainActivity,
+                            REQUEST_CHECK_SETTINGS)
+                    } catch (sendEx: IntentSender.SendIntentException) {
+                        // Ignore the error.
+                    }
+                }
+            }
+        }
+
+    }
 }
