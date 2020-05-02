@@ -4,7 +4,7 @@ Use Google specified architecture with the latest tools
 Uses best practices for Android apps suggested by Google
 Based on Guide to app architecture by Google using Activity/Fragment -> ViewModel -> Repository -> Remote Data source (retrofit), Model (Room)
 
-Doesn't ask for background location because location is not critical in this app
+Doesn't ask for background location because location is not critical in this app. Only uses location when app is active.
 
 Gets the last location and also runs a service to periodically update the location. Service only runs when app is active though, again because this is not a critical app.
 
