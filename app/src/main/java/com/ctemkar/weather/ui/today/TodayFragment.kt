@@ -6,6 +6,9 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -32,9 +35,17 @@ class TodayFragment : Fragment() {
     private var dateToShow: DateTime = DateTime.now() + 1.days
     private val TAG: String = "TodayFragment"
     private lateinit var viewModel: WeatherViewModel
+/*
+    private val viewModel: WeatherViewModel by lazy {
+        val activity = requireNotNull(this.activity) {
+            "You can only access the viewModel after onActivityCreated()"
+        }
+        ViewModelProviders.of(this, WeatherViewModel.Factory(activity.application))
+            .get(WeatherViewModel::class.java)
+    }
+*/
     private var woeId = -1
     private val model: SharedViewModel by activityViewModels()
-
     // private lateinit var homeViewModel: TodayViewModel
    // private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -84,11 +95,12 @@ class TodayFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // homeViewModel = ViewModelProviders.of(this).get(TodayViewModel::class.java)
+        setupViewModel()
+        setupUI()
         val root = inflater.inflate(R.layout.fragment_today, container, false)
         model.currentLocation.observe(viewLifecycleOwner, Observer<Location> { item ->
             location = model.currentLocation.value!!
-            if (location != null)
-                Log.d(TAG, "lat: " + location.latitude + ", lon: " + location.longitude)
+            Log.d(TAG, "lat: " + location.latitude + ", lon: " + location.longitude)
                 setupObservers()
 
             // Update the UI
@@ -118,8 +130,6 @@ class TodayFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setupViewModel()
-        setupUI()
         // setupObservers()
     }
 
@@ -157,6 +167,8 @@ class TodayFragment : Fragment() {
     private fun setupObservers() {
         val sLatLong = if (location.latitude == 0.0)
             "40.793896,-73.940711" else location.latitude.toString() + "," + location.longitude.toString()
+        progressBarTodaysWeather.visibility = View.VISIBLE
+        initWeatherCardContainer()
         viewModel.getLocationInfo(sLatLong).observe(viewLifecycleOwner, Observer {
             it?.let { resource ->
                 when (resource.status) {
@@ -169,7 +181,7 @@ class TodayFragment : Fragment() {
                             setupCurrentWeatherObserver(woeId)
                             setupDateRangeObserver(
                                 woeId,
-                                DateTime.now() + 1.days,
+                                dateToShow,
                                 Constant.defaultWeatherDays
                             )
                         } else
@@ -244,6 +256,8 @@ class TodayFragment : Fragment() {
         dateTime: DateTime,
         noOfDays: Int
     ) {
+        progressBarTodaysWeather.visibility = View.VISIBLE
+        initWeatherCardContainer()
         viewModel.getWeatherDateRange(woeid, dateTime, noOfDays)
             .observe(viewLifecycleOwner, Observer {
                 it?.let { resource ->
@@ -251,6 +265,7 @@ class TodayFragment : Fragment() {
                         Status.SUCCESS -> {
 //                        recyclerView.visibility = View.VISIBLE
                             progressBarTodaysWeather.visibility = View.GONE
+                            LinearLayout_CardContainerLayout.removeAllViews()
                             if (resource.data != null) {
                                 Log.d(TAG, resource.data[0].weather_state_name)
                                 val weatherList = resource.data
@@ -299,6 +314,17 @@ class TodayFragment : Fragment() {
 
     }
 
+    private fun initWeatherCardContainer() {
+        LinearLayout_CardContainerLayout.removeAllViews()
+        val progressBar = ProgressBar(activity)
+        //setting height and width of progressBar
+        progressBar.layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        LinearLayout_CardContainerLayout.addView(progressBar)
+
+    }
     private fun addWeatherCard(weatherInfo: WeatherInfo) {
         val inflater =
             activity?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -322,7 +348,7 @@ class TodayFragment : Fragment() {
             )
         }
 
-        LinearLayout_weatherCardViews.addView(
+        LinearLayout_CardContainerLayout.addView(
             v,
             0,
             ViewGroup.LayoutParams(

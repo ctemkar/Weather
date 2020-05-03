@@ -10,7 +10,7 @@
     <string name="deg_f">" \u2109"</string>
     <string name="cantGetWeather">"Sorry, can't get weather"</string>
     <string name="weather_state_image">Weather State Image</string>
-    <string name="weather_on_date">Weather on Date</string>
+    <string name="weather_on_date">Year back</string>
     <string name="enable_gps">Enable GPS</string>
     <string name="required_for_this_app">To get weather location is required</string>
     <string name="enable_now">Enable now</string>

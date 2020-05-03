@@ -4,9 +4,9 @@ import android.app.Application
 
 
 @SuppressWarnings("all")
-class App : Application() {
+class WeatherApp : Application() {
     companion object {
-        lateinit var instance: App
+        lateinit var instance: WeatherApp
             private set
     }
 
