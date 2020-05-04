@@ -80,5 +80,9 @@ dependencies {
     // Timber for logging
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
+    // Stetho Network debugging
+    implementation 'com.facebook.stetho:stetho:1.5.1'
+    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
+
 
 }
