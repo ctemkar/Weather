@@ -1,4 +1,4 @@
-package utils
+package com.ctemkar.weather.utils
 
 data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
     companion object {

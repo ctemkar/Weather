@@ -1,4 +1,4 @@
-package utils
+package com.ctemkar.weather.utils
 
 import android.Manifest
 import android.content.Context

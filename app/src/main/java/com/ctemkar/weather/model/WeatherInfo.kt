@@ -1,4 +1,4 @@
-package model
+package com.ctemkar.weather.model
 
 data class WeatherInfo(
     val air_pressure: Double,

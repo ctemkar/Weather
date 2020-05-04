@@ -1,7 +1,7 @@
-package network
+package com.ctemkar.weather.network
 
 import JsonWeather
-import model.WeatherInfo
+import com.ctemkar.weather.model.WeatherInfo
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

@@ -1,10 +1,9 @@
-package ui.base
+package com.ctemkar.weather.ViewModels
 
-import ViewModels.WeatherViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import data.repository.DataRepository
-import network.ApiHelper
+import com.ctemkar.weather.repository.DataRepository
+import com.ctemkar.weather.network.ApiHelper
 
 class LocationInfoViewModelFactory(private val apiHelper: ApiHelper) : ViewModelProvider.Factory {
 

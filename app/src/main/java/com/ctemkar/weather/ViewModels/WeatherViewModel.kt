@@ -1,11 +1,11 @@
-package ViewModels
+package com.ctemkar.weather.ViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.soywiz.klock.DateTime
-import data.repository.DataRepository
+import com.ctemkar.weather.repository.DataRepository
 import kotlinx.coroutines.Dispatchers
-import utils.Resource
+import com.ctemkar.weather.utils.Resource
 
 class WeatherViewModel(private val dataRepository: DataRepository) : ViewModel() {
 

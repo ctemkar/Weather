@@ -1,13 +1,13 @@
-package data.repository
+package com.ctemkar.weather.repository
 
 import android.util.Log
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.days
 import com.soywiz.klock.parseUtc
-import model.WeatherInfo
-import network.ApiHelper
-import network.LocationInfo
+import com.ctemkar.weather.model.WeatherInfo
+import com.ctemkar.weather.network.ApiHelper
+import com.ctemkar.weather.network.LocationInfo
 import kotlin.math.roundToInt
 
 class DataRepository(private val apiHelper: ApiHelper) {

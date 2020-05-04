@@ -9,17 +9,10 @@
         android:id="@+id/navigation_home"
         android:name="com.ctemkar.weather.ui.today.TodayFragment"
         android:label="@string/title_today"
-        tools:layout="@layout/fragment_today" />
+        tools:layout="@layout/fragment_today" >
+        <action
+            android:id="@+id/action_navigation_home_self"
+            app:destination="@id/navigation_home" />
+    </fragment>
 
-    <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.ctemkar.weather.ui.future.FutureFragment"
-        android:label="@string/title_future"
-        tools:layout="@layout/fragment_future" />
-
-    <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.ctemkar.weather.ui.date.NotificationsFragment"
-        android:label="@string/title_date"
-        tools:layout="@layout/fragment_notifications" />
 </navigation>

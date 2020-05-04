@@ -20,10 +20,11 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
-import utils.ForegroundOnlyLocationService
-import utils.SharedPreferenceUtil
-import utils.SharedViewModel
-import utils.toText
+import com.ctemkar.weather.utils.ForegroundOnlyLocationService
+import com.ctemkar.weather.utils.SharedPreferenceUtil
+import com.ctemkar.weather.ViewModels.SharedViewModel
+import com.ctemkar.weather.utils.toText
+import timber.log.Timber
 
 private const val TAG = "MainActivity"
 private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
@@ -52,7 +53,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             foregroundOnlyLocationServiceBound = true
             if (foregroundPermissionApproved()) {
                 foregroundOnlyLocationService?.subscribeToLocationUpdates()
-                    ?: Log.d(TAG, "Service Not Bound")
+                    ?: Timber.d("Service Not Bound")
             } else {
                 requestForegroundPermissions()
             }
@@ -179,7 +180,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 }
                 .show()
         } else {
-            Log.d(TAG, "Request foreground only permission")
+            Timber.d("Request foreground only permission")
             ActivityCompat.requestPermissions(
                 this@MainActivity,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -194,14 +195,14 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        Log.d(TAG, "onRequestPermissionResult")
+        Timber.d("onRequestPermissionResult")
 
         when (requestCode) {
             REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE -> when {
                 grantResults.isEmpty() ->
                     // If user interaction was interrupted, the permission request
                     // is cancelled and you receive empty arrays.
-                    Log.d(TAG, "User interaction was cancelled.")
+                    Timber.d("User interaction was cancelled.")
 
                 grantResults[0] == PackageManager.PERMISSION_GRANTED ->
                     // Permission was granted.
@@ -236,13 +237,13 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun updateButtonState(trackingLocation: Boolean) {
-        Log.d(TAG, "updateButtonState")
+        Timber.d("updateButtonState")
 
         if (trackingLocation) {
-            Log.d(TAG, "Tracking location")
+            Timber.d("Tracking location")
             //foregroundOnlyLocationButton.text = getString(R.string.stop_location_updates_button_text)
         } else {
-            Log.d(TAG, "not tracking location")
+            Timber.d("not tracking location")
             //foregroundOnlyLocationButton.text = getString(R.string.start_location_updates_button_text)
         }
 
@@ -250,7 +251,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     }
 
     private fun logResultsToScreen(output: String) {
-        Log.d(TAG, output)
+        Timber.d(output)
         //   val outputWithPreviousLogs = "$output\n${outputTextView.text}"
         //  outputTextView.text = outputWithPreviousLogs
     }
@@ -286,9 +287,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         // assert(locationManager != null)
         val GpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         if (GpsStatus) {
-            Log.d(TAG, "GPS Is Enabled")
+            Timber.d("GPS Is Enabled")
         } else {
-            Log.d(TAG, "GPS Is Disabled")
+            Timber.d("GPS Is Disabled")
             startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
 
         }
@@ -340,10 +341,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                     gotLocation(loc)
                 } else
                 // Got last known location. In some rare situations this can be null.
-                    Log.d(TAG, "Location is null")
-                //                location.latitude()
-            }
+                    Timber.d("Location is null")
 
+            }
 
 
     }
@@ -355,7 +355,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             fastestInterval = 5000
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
         }
-        if(locationRequest != null) {
+        if (locationRequest != null) {
             val builder = LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest)
             val client: SettingsClient = LocationServices.getSettingsClient(this)
@@ -369,15 +369,17 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             }
 
             task.addOnFailureListener { exception ->
-                if (exception is ResolvableApiException){
+                if (exception is ResolvableApiException) {
                     // Location settings are not satisfied, but this can be fixed
                     // by showing the user a dialog.
                     try {
                         // Show the dialog by calling startResolutionForResult(),
                         // and check the result in onActivityResult().
 
-                        exception.startResolutionForResult(this@MainActivity,
-                            REQUEST_CHECK_SETTINGS)
+                        exception.startResolutionForResult(
+                            this@MainActivity,
+                            REQUEST_CHECK_SETTINGS
+                        )
                     } catch (sendEx: IntentSender.SendIntentException) {
                         // Ignore the error.
                     }

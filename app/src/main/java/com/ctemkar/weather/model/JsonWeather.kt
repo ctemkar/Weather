@@ -1,6 +1,6 @@
 
 import com.google.gson.annotations.SerializedName
-import model.WeatherInfo
+import com.ctemkar.weather.model.WeatherInfo
 
 
 class  JsonWeather{

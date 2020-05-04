@@ -77,4 +77,8 @@ dependencies {
     // Datetime
     implementation "com.soywiz.korlibs.klock:klock:$klockVersion"
 
+    // Timber for logging
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+
 }

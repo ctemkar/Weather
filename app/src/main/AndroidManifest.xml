@@ -28,7 +28,7 @@
         </activity>
 
         <service
-            android:name="utils.ForegroundOnlyLocationService"
+            android:name="com.ctemkar.weather.utils.ForegroundOnlyLocationService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />

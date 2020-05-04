@@ -1,4 +1,4 @@
-package model
+package com.ctemkar.weather.model
 
 data class Weather(
     val latt_long: String,

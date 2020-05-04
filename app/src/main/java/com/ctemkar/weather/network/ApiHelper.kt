@@ -1,4 +1,4 @@
-package network
+package com.ctemkar.weather.network
 
 
 class ApiHelper(private val apiService: ApiService) {

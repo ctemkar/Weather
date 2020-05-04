@@ -1,4 +1,4 @@
-package utils
+package com.ctemkar.weather.ViewModels
 
 import android.location.Location
 import androidx.lifecycle.MutableLiveData

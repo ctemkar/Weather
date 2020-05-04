@@ -1,5 +1,6 @@
-package utils
+package com.ctemkar.weather.utils
 
+import com.ctemkar.weather.ViewModels.SharedViewModel
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
@@ -9,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.parseUtc
+import timber.log.Timber
 import java.util.*
 
 
@@ -26,12 +28,12 @@ class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener 
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
-        Log.d("Date selected:", "" + month + "-" + day + "-" + year)
+        Timber.d("Date selected: $month-$day-$year")
         val viewModel = ViewModelProviders.of(requireActivity())[SharedViewModel::class.java]
         val dateFormat = DateFormat("yyyy-MM-dd")
         val mm = String.format("%02d", month+1)
         val dd = String.format("%02d", day)
-        Log.d("date: ", "$year-$mm-$dd")
+        Timber.d("date: $year-$mm-$dd")
         viewModel.selectedDate.value = dateFormat.parseUtc("$year-$mm-$dd")
     }
 }
