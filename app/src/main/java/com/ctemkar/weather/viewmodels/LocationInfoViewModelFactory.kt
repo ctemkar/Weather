@@ -13,12 +13,7 @@ class LocationInfoViewModelFactory(private val apiHelper: ApiHelper, private val
         if (modelClass.isAssignableFrom(WeatherViewModel::class.java)) {
             val db = getDatabase(context)
             return context?.let {
-                WeatherViewModel(
-                    DataRepository(
-                        apiHelper,
-                        db
-                    ), it
-                )
+                WeatherViewModel(DataRepository(apiHelper, db), it)
             } as T
         }
         throw IllegalArgumentException("Unknown class name")

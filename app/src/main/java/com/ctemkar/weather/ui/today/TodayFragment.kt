@@ -196,6 +196,53 @@ class TodayFragment : Fragment() {
     }
 
     private fun setupCurrentWeatherObserver(woeid: Int) {
+        viewModel.getCurrentWeatherFromDb(woeid).observe(viewLifecycleOwner, Observer {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+//                        recyclerView.visibility = View.VISIBLE
+                        progressBarTodaysWeather.visibility = View.GONE
+                        val weatherInfo = resource.data
+                        if (weatherInfo != null) {
+                            text_current_temp.text = weatherInfo.the_tempF.toString()
+                            text_minimum_temp.text = weatherInfo.min_tempF.toString()
+                            text_maxumum_temp.text = weatherInfo.max_tempF.toString()
+                            text_weather_state.text = weatherInfo.weather_state_name
+//                            text_day.text = weatherInfo.day
+
+                            val imageDrawable =
+                                getWeatherStateImage(resource.data.weather_state_abbr)
+                            val appContext = activity?.applicationContext
+                            if (appContext != null && imageDrawable >= 0) {
+                                image_weather_state.setImageDrawable(
+                                    ContextCompat.getDrawable(
+                                        appContext, // Context
+                                        imageDrawable// Drawable
+                                    )
+                                )
+                            }
+                            //text_time_at_location.text =
+                            //text_location.text = resource.data?.title
+                            //woeId = resource.data?.woeid
+                        } else
+                            text_day.text = getString(R.string.cantGetWeather)
+
+                    }
+
+                    Status.ERROR -> {
+                        progressBarTodaysWeather.visibility = View.GONE
+                        Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
+                    }
+                    Status.LOADING -> {
+                        // Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
+                        progressBarTodaysWeather.visibility = View.VISIBLE
+                    }
+
+                }
+            }
+        })
+
+
         viewModel.getCurrentWeather(woeid).observe(viewLifecycleOwner, Observer {
             it?.let { resource ->
                 when (resource.status) {

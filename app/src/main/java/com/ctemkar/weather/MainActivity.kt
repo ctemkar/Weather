@@ -104,6 +104,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
 //        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
 
+
     }
 
     override fun onResume() {

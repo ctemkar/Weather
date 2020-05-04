@@ -1,6 +1,7 @@
 package model
 
 data class WeatherInfo(
+    var woeId : Int,
     val air_pressure: Double,
     val applicable_date: String,
     var day : String,

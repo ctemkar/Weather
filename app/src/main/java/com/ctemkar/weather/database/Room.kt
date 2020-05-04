@@ -19,6 +19,7 @@ package com.ctemkar.weather.database
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import model.WeatherInfo
 
 
 @Dao
@@ -28,6 +29,12 @@ interface WeatherDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll( locations: List<dbMwLocation>)
+
+    @Query("select * from dbCurrentWeather where woeid = :woeId")
+    fun getCurrentWeather(woeId : Int) : List<dbCurrentWeather>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertCurrentWeather( weather : List<dbCurrentWeather>)
+
     /*
     @Query("select * from databaseweather")
     fun getWeather(): LiveData<List<DatabaseWeather>>
@@ -40,7 +47,7 @@ interface WeatherDao {
 
 
 
-@Database(entities = [dbMwLocation::class], version = 1)
+@Database(entities = [dbCurrentWeather::class, dbMwLocation::class], version = 1)
 abstract class WeatherDatabase: RoomDatabase() {
     abstract val weatherDao: WeatherDao
 }

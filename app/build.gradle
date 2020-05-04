@@ -111,6 +111,10 @@ dependencies {
     // Stetho Network debugging
     implementation 'com.facebook.stetho:stetho:1.5.1'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
+
+    // Explore Room database
+    implementation 'com.wajahatkarim3:roomexplorer:0.0.2'
+
 }
 
 

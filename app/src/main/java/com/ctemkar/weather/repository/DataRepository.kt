@@ -1,18 +1,25 @@
 package com.ctemkar.weather.repository
 
-import android.util.Log
 import com.ctemkar.weather.database.WeatherDatabase
+import com.ctemkar.weather.database.asDatabaseModel
+import com.ctemkar.weather.database.asDomainModel
 import com.soywiz.klock.DateFormat
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.days
 import com.soywiz.klock.parseUtc
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import model.WeatherInfo
 import network.ApiHelper
 import network.LocationInfo
+import network.TodayWeatherInfo
 import timber.log.Timber
 import kotlin.math.roundToInt
 
-class DataRepository(private val apiHelper: ApiHelper, private val database: WeatherDatabase) {
+class DataRepository(
+    private val apiHelper: ApiHelper,
+    private val database: WeatherDatabase
+) {
     private val TAG = "DataRepository"
     suspend fun getWeather() = apiHelper.getWeather()
     suspend fun getLocationInfo(latlong: String): LocationInfo? {
@@ -23,6 +30,13 @@ class DataRepository(private val apiHelper: ApiHelper, private val database: Wea
         else
             return null
     }
+
+    suspend fun getCurrentWeatherFromDb(woeId: Int) : WeatherInfo {
+        val weather = database.weatherDao.getCurrentWeather(woeId).asDomainModel()
+        val selectItem = weather.get(0)
+        return selectItem
+    }
+
 
     suspend fun getCurrentWeather(woeId: Int): WeatherInfo? {
 
@@ -46,9 +60,24 @@ class DataRepository(private val apiHelper: ApiHelper, private val database: Wea
         selectedItem.max_tempF = celciusToFahreniet(averageMaxTemp)
         Timber.d("AVG - Current: $(selectedItem.the_temp), Min: $(selectedItem.min_temp), Max: $selectedItem.max_temp)")
         Timber.d("CurrentF $(selectedItem.the_tempF) + MinF: $(selectedItem.min_tempF), MaxF: $(selectedItem.max_tempF)")
-        
+        val selectedList : ArrayList<WeatherInfo> = ArrayList<WeatherInfo>()
+        selectedItem.woeId = woeId
+        selectedList.add(selectedItem)
+
+        database.weatherDao.insertCurrentWeather(selectedList.asDatabaseModel())
         return selectedItem
 
+    }
+
+
+
+    suspend fun refreshCurrentWeather(woeId: Int) {
+        withContext(Dispatchers.IO) {
+            Timber.d("refresh current weather is called");
+            val currentWeather =  getCurrentWeather(woeId)
+            // database.weatherDao.
+//            database.videoDao.insertAll(playlist.asDatabaseModel())
+        }
     }
 
     private fun celciusToFahreniet(averageMinTemp: Double): Int {
@@ -61,32 +90,29 @@ class DataRepository(private val apiHelper: ApiHelper, private val database: Wea
         noOfDays: Int
     ): List<WeatherInfo> {
         val weatherInfoList = ArrayList<WeatherInfo>()
-//        val stackWeatherInfoList = Stack<WeatherInfo>()
         Timber.d("Date: $(dateStart + 1.days)")
         var date = dateStart
         val today = DateTime.now()
         val tomorrow = DateTime.now() + 1.days
         val dateFormat = DateFormat("yyyy-MM-dd") // Construct a new DateFormat from a String
         val dateDisplayFormatCurrentYear = DateFormat("EEE MMM, dd")
-        val dateDispalyFromatOtherYears = DateFormat("MM dd, YYYY")
+        val dateDisplayFormatOtherYears = DateFormat("MM dd, YYYY")
 
         for (i in 0 until noOfDays) {
-            // Log.d(TAG, date.yearInt.toString() + "/" + date.month1.toString() + "/" + date.dayOfMonth.toString())
             val weatherInfo = getWeatherOnDate(woeId, date.yearInt, date.month1, date.dayOfMonth)
-            if (weatherInfo.size > 0) {
+            if (weatherInfo.isNotEmpty()) {
                 val selectWeatherInfo = weatherInfo.get(0)
                 val applicableDate = dateFormat.parseUtc(selectWeatherInfo.applicable_date)
                 selectWeatherInfo.min_tempF = celciusToFahreniet(selectWeatherInfo.min_temp)
                 selectWeatherInfo.max_tempF = celciusToFahreniet(selectWeatherInfo.max_temp)
                 if (applicableDate.year == tomorrow.year && applicableDate.month == tomorrow.month
-                    && applicableDate.dayOfMonth == tomorrow.dayOfMonth
-                )
+                    && applicableDate.dayOfMonth == tomorrow.dayOfMonth)
                     selectWeatherInfo.day = "Tomorrow"
                 else
                     if (applicableDate.year == today.year)
                         selectWeatherInfo.day = applicableDate.format(dateDisplayFormatCurrentYear)
                     else
-                        selectWeatherInfo.day = applicableDate.format((dateDispalyFromatOtherYears))
+                        selectWeatherInfo.day = applicableDate.format((dateDisplayFormatOtherYears))
                 weatherInfoList.add(selectWeatherInfo)
 
             } else

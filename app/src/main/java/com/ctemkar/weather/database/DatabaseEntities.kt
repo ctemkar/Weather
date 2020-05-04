@@ -16,9 +16,11 @@
 
 package com.ctemkar.weather.database
 
+import androidx.lifecycle.Transformations.map
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.ctemkar.weather.domain.mwLocation
+import model.WeatherInfo
 
 @Entity
 data class dbMwLocation constructor(
@@ -35,6 +37,7 @@ data class dbMwLocation constructor(
 /**
  * Map DatabaseVideos to domain entities
  */
+/*
 fun List<dbMwLocation>.asDomainModel(): List<mwLocation> {
     return map {
         mwLocation(
@@ -47,8 +50,92 @@ fun List<dbMwLocation>.asDomainModel(): List<mwLocation> {
     }
 }
 
+ */
 
-/**
+@Entity
+data class dbCurrentWeather constructor(
+    @PrimaryKey
+    val woeId: Int,
+    val id: Long,
+    val air_pressure: Double,
+    val applicable_date: String,
+    var day : String,
+    val created: String,
+    val humidity: Int,
+    var max_temp: Double,
+    var min_temp: Double,
+    var max_tempF: Int,
+    var min_tempF: Int,
+    val predictability: Int,
+    val the_temp: Double,
+    var the_tempF: Int,
+    val visibility: Double,
+    val weather_state_abbr: String,
+    val weather_state_name: String,
+    val wind_direction: Double,
+    val wind_direction_compass: String,
+    val wind_speed: Double)
+
+fun List<WeatherInfo>.asDatabaseModel() : List<dbCurrentWeather> {
+    return map {
+        dbCurrentWeather(
+            id = it.id,
+            woeId = it.woeId,
+            air_pressure = it.air_pressure,
+            applicable_date = it.applicable_date,
+            day = it.day,
+            created = it.created,
+            humidity = it.humidity,
+            max_temp = it.max_temp,
+            max_tempF = it.max_tempF,
+            min_temp = it.min_temp,
+            min_tempF = it.min_tempF,
+            predictability = it.predictability,
+            the_temp = it.the_temp,
+            the_tempF = it.the_tempF,
+            visibility = it.visibility,
+            weather_state_abbr = it.weather_state_abbr,
+            weather_state_name = it.weather_state_name,
+            wind_direction = it.wind_direction,
+            wind_direction_compass = it.wind_direction_compass,
+            wind_speed = it.wind_speed
+        )
+
+    }
+}
+
+fun List<dbCurrentWeather>.asDomainModel(): List<WeatherInfo> {
+    return map {
+        WeatherInfo(
+            id = it.id,
+            woeId = it.woeId,
+            air_pressure = it.air_pressure,
+            applicable_date = it.applicable_date,
+            day = it.day,
+            created = it.created,
+            humidity = it.humidity,
+            max_temp = it.max_temp,
+            max_tempF = it.max_tempF,
+            min_temp = it.min_temp,
+            min_tempF = it.min_tempF,
+            predictability = it.predictability,
+            the_temp = it.the_temp,
+            the_tempF = it.the_tempF,
+            visibility = it.visibility,
+            weather_state_abbr = it.weather_state_abbr,
+            weather_state_name = it.weather_state_name,
+            wind_direction = it.wind_direction,
+            wind_direction_compass = it.wind_direction_compass,
+            wind_speed = it.wind_speed
+
+
+        )
+    }
+}
+
+
+
+/*
  * WeatherDay represents a days weather in the database for a particular woeid.
  */
 /*
