@@ -8,6 +8,7 @@ import com.soywiz.klock.parseUtc
 import com.ctemkar.weather.model.WeatherInfo
 import com.ctemkar.weather.network.ApiHelper
 import com.ctemkar.weather.network.LocationInfo
+import timber.log.Timber
 import kotlin.math.roundToInt
 
 class DataRepository(private val apiHelper: ApiHelper) {
@@ -31,8 +32,8 @@ class DataRepository(private val apiHelper: ApiHelper) {
             selectedItem.max_tempF = ((selectedItem.max_temp * 9/ 5) + 32).toInt()
 
         }
-        Log.d(TAG, "Current:" + selectedItem?.the_temp + ", Min:" + selectedItem?.min_temp + ", Max: " + selectedItem?.max_temp)
-        Log.d(TAG, "CurrentF:" + selectedItem?.the_tempF + ", MinF:" + selectedItem?.min_tempF + ", MaxF: " + selectedItem?.max_tempF)
+        Timber.d("Current: $(selectedItem.the_temp), Min: $(selectedItem.min_temp), Max: $(selectedItem.max_temp)")
+        Timber.d("CurrentF: $(selectedItem.the_tempF), MinF: $(selectedItem.min_tempF), MaxF: $(selectedItem.max_tempF)")
 
         val averageTemp = weatherItems?.map { it->it.the_temp }?.average()
 
@@ -45,8 +46,8 @@ class DataRepository(private val apiHelper: ApiHelper) {
             selectedItem?.min_tempF = celciusToFahreniet(averageMinTemp)
         if(averageMaxTemp != null)
             selectedItem?.max_tempF = celciusToFahreniet(averageMaxTemp)
-        Log.d(TAG, "AVG - Current:" + selectedItem?.the_temp + ", Min:" + selectedItem?.min_temp + ", Max: " + selectedItem?.max_temp)
-        Log.d(TAG, "CurrentF:" + selectedItem?.the_tempF + ", MinF:" + selectedItem?.min_tempF + ", MaxF: " + selectedItem?.max_tempF)
+        Timber.d("AVG - Current: $(selectedItem.the_temp), Min: $(selectedItem.min_temp), Max: $selectedItem.max_temp)")
+        Timber.d("CurrentF $(selectedItem.the_tempF) + MinF: $(selectedItem.min_tempF), MaxF: $(selectedItem.max_tempF)")
 
 
         if (weatherItems != null) {

@@ -192,13 +192,13 @@ class TodayFragment : Fragment() {
         noOfDays: Int
     ) {
         progressBarTodaysWeather.visibility = View.VISIBLE
-        initWeatherCardContainer()
         viewModel.getWeatherDateRange(woeid, dateTime, noOfDays)
             .observe(viewLifecycleOwner, Observer {
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
 //                        recyclerView.visibility = View.VISIBLE
+                            initWeatherCardContainer()
                             progressBarTodaysWeather.visibility = View.GONE
                             LinearLayout_CardContainerLayout.removeAllViews()
                             if (resource.data != null) {
