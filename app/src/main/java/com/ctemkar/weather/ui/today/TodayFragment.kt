@@ -1,6 +1,7 @@
 package com.ctemkar.weather.ui.today
 
-import ViewModels.WeatherViewModel
+import com.ctemkar.weather.viewmodels.LocationInfoViewModelFactory
+import com.ctemkar.weather.viewmodels.WeatherViewModel
 import android.content.Context
 import android.location.Location
 import android.os.Bundle
@@ -16,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.ctemkar.weather.R
+import com.ctemkar.weather.database.getDatabase
 import com.soywiz.klock.DateTime
 import com.soywiz.klock.days
 import kotlinx.android.synthetic.main.fragment_today.*
@@ -23,7 +25,7 @@ import kotlinx.android.synthetic.main.weather_card.view.*
 import model.WeatherInfo
 import network.ApiHelper
 import network.RetrofitBuilder
-import ui.base.LocationInfoViewModelFactory
+import timber.log.Timber
 import utils.Constant
 import utils.DatePickerFragment
 import utils.SharedViewModel
@@ -35,6 +37,7 @@ class TodayFragment : Fragment() {
     private var dateToShow: DateTime = DateTime.now() + 1.days
     private val TAG: String = "TodayFragment"
     private lateinit var viewModel: WeatherViewModel
+
 /*
     private val viewModel: WeatherViewModel by lazy {
         val activity = requireNotNull(this.activity) {
@@ -43,7 +46,8 @@ class TodayFragment : Fragment() {
         ViewModelProviders.of(this, WeatherViewModel.Factory(activity.application))
             .get(WeatherViewModel::class.java)
     }
-*/
+ */
+
     private var woeId = -1
     private val model: SharedViewModel by activityViewModels()
     // private lateinit var homeViewModel: TodayViewModel
@@ -79,7 +83,8 @@ class TodayFragment : Fragment() {
 
                 val newFragment = DatePickerFragment()
                 activity?.supportFragmentManager?.let { newFragment.show(it, "datePicker") }
-                // activity?.supportFragmentManager?.let { TimePickerFragment().show(it, "timePicker") }
+
+
                 true
             }
 
@@ -94,37 +99,21 @@ class TodayFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // homeViewModel = ViewModelProviders.of(this).get(TodayViewModel::class.java)
+
+        getDatabase(activity?.applicationContext)
         setupViewModel()
         setupUI()
         val root = inflater.inflate(R.layout.fragment_today, container, false)
         model.currentLocation.observe(viewLifecycleOwner, Observer<Location> { item ->
             location = model.currentLocation.value!!
-            Log.d(TAG, "lat: " + location.latitude + ", lon: " + location.longitude)
-                setupObservers()
+            Timber.d("lat: ${location.longitude}, lon: ${location.longitude}")
+            setupObservers()
 
             // Update the UI
         })
         // val ctx = getActivity()?.applicationContext
         setHasOptionsMenu(true)
-        /*
-        if (ctx != null) {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { loc: Location? ->
-                    if (loc != null) {
-                        this.location = loc
-//                        setupObservers()
 
-                    } else
-                    // Got last known location. In some rare situations this can be null.
-                        Log.d(TAG, "Location is null")
-                    //                location.latitude()
-                }
-
-        }
-
-         */
         return root
     }
 
@@ -140,15 +129,18 @@ class TodayFragment : Fragment() {
 
          */
 
-        viewModel = ViewModelProviders.of(
-            this,
-            LocationInfoViewModelFactory(ApiHelper(RetrofitBuilder.apiService))
+        viewModel = ViewModelProviders.of(this,
+            LocationInfoViewModelFactory(
+                ApiHelper(RetrofitBuilder.apiService),
+                context?.applicationContext
+            )
         ).get(WeatherViewModel::class.java)
 
 
     }
 
     private fun setupUI() {
+
 
         /*
         recyclerView.layoutManager = LinearLayoutManager(activity)
@@ -167,23 +159,24 @@ class TodayFragment : Fragment() {
     private fun setupObservers() {
         val sLatLong = if (location.latitude == 0.0)
             "40.793896,-73.940711" else location.latitude.toString() + "," + location.longitude.toString()
-        progressBarTodaysWeather.visibility = View.VISIBLE
-        initWeatherCardContainer()
         viewModel.getLocationInfo(sLatLong).observe(viewLifecycleOwner, Observer {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-//                        recyclerView.visibility = View.VISIBLE
+                        initWeatherCardContainer()
                         progressBarTodaysWeather.visibility = View.GONE
                         if (resource.data != null) {
-                            text_day.text = resource.data.title
-                            woeId = resource.data.woeid
+                           text_day.text = resource.data.title
+                           woeId = resource.data.woeid
                             setupCurrentWeatherObserver(woeId)
+
                             setupDateRangeObserver(
                                 woeId,
                                 dateToShow,
                                 Constant.defaultWeatherDays
                             )
+
+
                         } else
                             text_day.text = getString(R.string.cantGetWeather)
                     }
@@ -251,49 +244,28 @@ class TodayFragment : Fragment() {
 
     }
 
+
     private fun setupDateRangeObserver(
         woeid: Int,
         dateTime: DateTime,
         noOfDays: Int
     ) {
         progressBarTodaysWeather.visibility = View.VISIBLE
-        initWeatherCardContainer()
         viewModel.getWeatherDateRange(woeid, dateTime, noOfDays)
             .observe(viewLifecycleOwner, Observer {
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
-//                        recyclerView.visibility = View.VISIBLE
+                            initWeatherCardContainer()
                             progressBarTodaysWeather.visibility = View.GONE
                             LinearLayout_CardContainerLayout.removeAllViews()
                             if (resource.data != null) {
-                                Log.d(TAG, resource.data[0].weather_state_name)
+                                Timber.d(resource.data[0].weather_state_name)
                                 val weatherList = resource.data
                                 for (weatherInfo in weatherList) {
                                     addWeatherCard(weatherInfo)
                                 }
 
-                                /*
-                                text_current_temp.text = resource.data.the_tempF.toString()
-                                text_minimum_temp.text = resource.data.min_tempF.toString()
-                                text_maxumum_temp.text = resource.data.max_tempF.toString()
-                                text_weather_state.text = resource.data.weather_state_name
-
-                                val imageDrawable =  getWeatherStateImage(resource.data.weather_state_abbr)
-                                val appContext = activity?.applicationContext
-                                if(appContext != null && imageDrawable >= 0) {
-                                    image_weather_state.setImageDrawable(
-                                        ContextCompat.getDrawable(
-                                            appContext, // Context
-                                            imageDrawable// Drawable
-                                        ))
-
-                                }
-                                */
-
-                                //text_time_at_location.text =
-                                //text_location.text = resource.data?.title
-                                //woeId = resource.data?.woeid
                             } else
                                 text_day.text = getString(R.string.cantGetWeather)
 

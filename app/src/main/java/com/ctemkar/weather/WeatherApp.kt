@@ -1,6 +1,7 @@
 package com.ctemkar.weather
 
 import android.app.Application
+import com.facebook.stetho.Stetho
 
 
 @SuppressWarnings("all")
@@ -13,7 +14,7 @@ class WeatherApp : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-//            Stetho.initializeWithDefaults(this)
+        Stetho.initializeWithDefaults(this)
 //            DatabaseCreator.createDatabase(this)
     }
 }

@@ -1,6 +1,5 @@
 package network
 
-import JsonWeather
 import model.WeatherInfo
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -16,7 +15,7 @@ interface ApiService {
     suspend fun getLocationInfo(@Query("lattlong") latlong: String): List<LocationInfo>
 
     @GET("/api/location/{woeid}")
-    suspend fun getCurrentWeather(@Path("woeid") woeId: Int): JsonWeather
+    suspend fun getCurrentWeather(@Path("woeid") woeId: Int): TodayWeatherInfo
 
 //    @GET("/api/location/{woeid}/{date}/")
     @GET("/api/location/{woeid}/{yyyy}/{mm}/{dd}")
