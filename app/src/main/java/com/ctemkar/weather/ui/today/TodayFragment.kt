@@ -1,10 +1,8 @@
 package com.ctemkar.weather.ui.today
 
-import com.ctemkar.weather.ViewModels.WeatherViewModel
 import android.content.Context
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -16,28 +14,31 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.ctemkar.weather.R
-import com.soywiz.klock.DateTime
-import com.soywiz.klock.days
-import kotlinx.android.synthetic.main.fragment_today.*
-import kotlinx.android.synthetic.main.weather_card.view.*
+import com.ctemkar.weather.ViewModels.LocationInfoViewModelFactory
+import com.ctemkar.weather.ViewModels.SharedViewModel
+import com.ctemkar.weather.ViewModels.WeatherViewModel
+import com.ctemkar.weather.databinding.FragmentTodayBinding
 import com.ctemkar.weather.model.WeatherInfo
 import com.ctemkar.weather.network.ApiHelper
 import com.ctemkar.weather.network.RetrofitBuilder
-import com.ctemkar.weather.ViewModels.LocationInfoViewModelFactory
 import com.ctemkar.weather.utils.Constant
 import com.ctemkar.weather.utils.DatePickerFragment
-import com.ctemkar.weather.ViewModels.SharedViewModel
 import com.ctemkar.weather.utils.Status
+import com.soywiz.klock.DateTime
+import com.soywiz.klock.days
+import kotlinx.android.synthetic.main.weather_card.view.*
 import timber.log.Timber
 
 
 class TodayFragment : Fragment() {
-
+    private var _binding: FragmentTodayBinding? = null
     private var dateToShow: DateTime = DateTime.now() + 1.days
-    private val TAG: String = "TodayFragment"
+    // private val TAG: String = "TodayFragment"
     private lateinit var viewModel: WeatherViewModel
     private var woeId = -1
     private val model: SharedViewModel by activityViewModels()
+    private val binding get() = _binding!!
+    
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.weather_main_frag_menu, menu)
@@ -50,7 +51,7 @@ class TodayFragment : Fragment() {
 
                 ViewModelProviders.of(requireActivity())[SharedViewModel::class.java]
                     .selectedDate
-                    .observe(requireActivity(), Observer {
+                    .observe(requireActivity(), {
                         dateToShow = it
                         setupDateRangeObserver(
                             woeId,
@@ -77,15 +78,18 @@ class TodayFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // homeViewModel = ViewModelProviders.of(this).get(TodayViewModel::class.java)
+        _binding = FragmentTodayBinding.inflate(inflater, container, false)
+        val view = binding.root
         setupViewModel()
-        val root = inflater.inflate(R.layout.fragment_today, container, false)
-        model.currentLocation.observe(viewLifecycleOwner, Observer<Location> { item ->
+       // val root = inflater.inflate(R.layout.fragment_today, container, false)
+        model.currentLocation.observe(viewLifecycleOwner, { item ->
             location = model.currentLocation.value!!
             Timber.d("lat: $(location.latitude), lon: $(location.longitude)")
             setupObservers()
         })
         setHasOptionsMenu(true)
-        return root
+        //return root
+        return view
     }
 
     override fun onResume() {
@@ -103,15 +107,15 @@ class TodayFragment : Fragment() {
     private fun setupObservers() {
         val sLatLong = if (location.latitude == 0.0)
             "40.793896,-73.940711" else location.latitude.toString() + "," + location.longitude.toString()
-        progressBarTodaysWeather.visibility = View.VISIBLE
-        viewModel.getLocationInfo(sLatLong).observe(viewLifecycleOwner, Observer {
+        binding.progressBarTodaysWeather.visibility = View.VISIBLE
+        viewModel.getLocationInfo(sLatLong).observe(viewLifecycleOwner, {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         initWeatherCardContainer()
-                        progressBarTodaysWeather.visibility = View.GONE
+                        binding.progressBarTodaysWeather.visibility = View.GONE
                         if (resource.data != null) {
-                            text_day.text = resource.data.title
+                            binding.textDay.text = resource.data.title
                             woeId = resource.data.woeid
                             setupCurrentWeatherObserver(woeId)
                             setupDateRangeObserver(
@@ -120,21 +124,22 @@ class TodayFragment : Fragment() {
                                 Constant.defaultWeatherDays
                             )
                         } else
-                            text_day.text = getString(R.string.cantGetWeather)
+                            binding.textDay.text = getString(R.string.cantGetWeather)
                     }
 
                     Status.ERROR -> {
-                        progressBarTodaysWeather.visibility = View.GONE
+                        binding.progressBarTodaysWeather.visibility = View.GONE
                         Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
                     }
                     Status.LOADING -> {
                         // Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
-                        progressBarTodaysWeather.visibility = View.VISIBLE
+                        binding.progressBarTodaysWeather.visibility = View.VISIBLE
                     }
 
                 }
             }
         })
+
     }
 
     private fun setupCurrentWeatherObserver(woeid: Int) {
@@ -143,20 +148,20 @@ class TodayFragment : Fragment() {
                 when (resource.status) {
                     Status.SUCCESS -> {
 //                        recyclerView.visibility = View.VISIBLE
-                        progressBarTodaysWeather.visibility = View.GONE
+                        binding.progressBarTodaysWeather.visibility = View.GONE
                         val weatherInfo = resource.data
                         if (weatherInfo != null) {
-                            text_current_temp.text = weatherInfo.the_tempF.toString()
-                            text_minimum_temp.text = weatherInfo.min_tempF.toString()
-                            text_maxumum_temp.text = weatherInfo.max_tempF.toString()
-                            text_weather_state.text = weatherInfo.weather_state_name
+                            binding.textCurrentTemp.text = weatherInfo.the_tempF.toString()
+                            binding.textMinimumTemp.text = weatherInfo.min_tempF.toString()
+                            binding.textMaximumTemp.text = weatherInfo.max_tempF.toString()
+                            binding.textWeatherState.text = weatherInfo.weather_state_name
 //                            text_day.text = weatherInfo.day
 
                             val imageDrawable =
                                 getWeatherStateImage(resource.data.weather_state_abbr)
                             val appContext = activity?.applicationContext
                             if (appContext != null && imageDrawable >= 0) {
-                                image_weather_state.setImageDrawable(
+                                binding.imageWeatherState.setImageDrawable(
                                     ContextCompat.getDrawable(
                                         appContext, // Context
                                         imageDrawable// Drawable
@@ -167,17 +172,17 @@ class TodayFragment : Fragment() {
                             //text_location.text = resource.data?.title
                             //woeId = resource.data?.woeid
                         } else
-                            text_day.text = getString(R.string.cantGetWeather)
+                            binding.textDay.text = getString(R.string.cantGetWeather)
 
                     }
 
                     Status.ERROR -> {
-                        progressBarTodaysWeather.visibility = View.GONE
+                        binding.progressBarTodaysWeather.visibility = View.GONE
                         Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
                     }
                     Status.LOADING -> {
                         // Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
-                        progressBarTodaysWeather.visibility = View.VISIBLE
+                        binding.progressBarTodaysWeather.visibility = View.VISIBLE
                     }
 
                 }
@@ -191,7 +196,7 @@ class TodayFragment : Fragment() {
         dateTime: DateTime,
         noOfDays: Int
     ) {
-        progressBarTodaysWeather.visibility = View.VISIBLE
+        binding.progressBarTodaysWeather.visibility = View.VISIBLE
         viewModel.getWeatherDateRange(woeid, dateTime, noOfDays)
             .observe(viewLifecycleOwner, Observer {
                 it?.let { resource ->
@@ -199,8 +204,8 @@ class TodayFragment : Fragment() {
                         Status.SUCCESS -> {
 //                        recyclerView.visibility = View.VISIBLE
                             initWeatherCardContainer()
-                            progressBarTodaysWeather.visibility = View.GONE
-                            LinearLayout_CardContainerLayout.removeAllViews()
+                            binding.progressBarTodaysWeather.visibility = View.GONE
+                            binding.LinearLayoutCardContainerLayout.removeAllViews()
                             if (resource.data != null) {
                                 Timber.d(resource.data[0].weather_state_name)
                                 val weatherList = resource.data
@@ -209,17 +214,17 @@ class TodayFragment : Fragment() {
                                 }
 
                             } else
-                                text_day.text = getString(R.string.cantGetWeather)
+                                binding.textDay.text = getString(R.string.cantGetWeather)
 
                         }
 
                         Status.ERROR -> {
-                            progressBarTodaysWeather.visibility = View.GONE
+                            binding.progressBarTodaysWeather.visibility = View.GONE
                             Toast.makeText(activity, it.message, Toast.LENGTH_LONG).show()
                         }
                         Status.LOADING -> {
                             // Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
-                            progressBarTodaysWeather.visibility = View.VISIBLE
+                            binding.progressBarTodaysWeather.visibility = View.VISIBLE
                         }
 
                     }
@@ -229,7 +234,7 @@ class TodayFragment : Fragment() {
     }
 
     private fun initWeatherCardContainer() {
-        LinearLayout_CardContainerLayout.removeAllViews()
+        binding.LinearLayoutCardContainerLayout.removeAllViews()
         val progressBar = ProgressBar(activity)
         //setting height and width of progressBar
         progressBar.layoutParams = LinearLayout.LayoutParams(
@@ -237,7 +242,7 @@ class TodayFragment : Fragment() {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
 
-        LinearLayout_CardContainerLayout.addView(progressBar)
+        binding.LinearLayoutCardContainerLayout.addView(progressBar)
 
     }
 
@@ -250,7 +255,7 @@ class TodayFragment : Fragment() {
         v.text_day.text = weatherInfo.day
 
         v.text_minimum_temp.text = weatherInfo.min_tempF.toString()
-        v.text_maxumum_temp.text = weatherInfo.max_tempF.toString()
+        v.text_maximum_temp.text = weatherInfo.max_tempF.toString()
 
         val imageDrawable =
             getWeatherStateImage(weatherInfo.weather_state_abbr)
@@ -264,7 +269,7 @@ class TodayFragment : Fragment() {
             )
         }
 
-        LinearLayout_CardContainerLayout.addView(
+        binding.LinearLayoutCardContainerLayout.addView(
             v,
             0,
             ViewGroup.LayoutParams(
@@ -289,6 +294,9 @@ class TodayFragment : Fragment() {
             else -> -1
         }
     }
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
 }
